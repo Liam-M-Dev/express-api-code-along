@@ -1,3 +1,4 @@
+// CONFIGURATION
 // configure dotenv to make .env available for use
 const dotenv = require("dotenv");
 dotenv.config();
@@ -29,6 +30,49 @@ let corsOptions = {
     optionsSuccessStatus: 200
 }
 app.use(cors(corsOptions));
+
+// Setting up database connection depending on environment currently running
+const mongoose = require("mongoose");
+let databaseURL = "";
+switch (process.env.NODE_ENV.toLowerCase()) {
+    case "test":
+        databaseURL = "mongodb://localhost:27017/ExpressBuildAPI-test";
+        break;
+    case "development":
+        databaseURL = "mongodb://localhost:27017/ExpressBuildAPI-dev";
+        break;
+    case "production":
+        databaseURL = process.env.DATABASE_URL;
+        break;
+    default:
+        console.error("Incorrect JS environment specified, database will not be connected.");
+        break;
+}
+const {databaseConnector} = require("./database");
+databaseConnector(databaseURL).then(() => {
+    console.log("Database connected successfully");
+}).catch(error => {
+    console.log(`Some error has occurred connecting to the database: ${error}`);
+});
+
+
+
+
+// ROUTES
+// Route to receive information about the database connection
+app.get("/databaseHealth", (request, response) => {
+    let databaseState = mongoose.connection.readyState;
+    let databaseName = mongoose.connection.name;
+    let databaseModels = mongoose.connection.modelNames();
+    let databaseHost = mongoose.connection.host;
+
+    response.json({
+        readyState: databaseState,
+        dbName: databaseName,
+        dbModels: databaseModels,
+        dbHost: databaseHost
+    })
+})
 
 // Route to check express setup works
 app.get("/", (request, response) => {
