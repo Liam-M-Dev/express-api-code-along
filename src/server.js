@@ -36,10 +36,10 @@ const mongoose = require("mongoose");
 let databaseURL = "";
 switch (process.env.NODE_ENV.toLowerCase()) {
     case "test":
-        databaseURL = "mongodb://localhost:27017/ExpressBuildAPI-test";
+        databaseURL = "mongodb://localhost:27017/ExpressBuildAnAPI-test";
         break;
     case "development":
-        databaseURL = "mongodb://localhost:27017/ExpressBuildAPI-dev";
+        databaseURL = "mongodb://localhost:27017/ExpressBuildAnAPI-dev";
         break;
     case "production":
         databaseURL = process.env.DATABASE_URL;
@@ -79,6 +79,29 @@ app.get("/", (request, response) => {
     response.json({
         message: "Hello World!"
     });
+});
+
+// Database dump route to ensure all is working
+app.get("/databaseDump", async (request, response) => {
+    // Object to store data
+    const dumpContainer = {};
+
+    // Get names of the collections in db
+    var collections = await mongoose.connection.db.listCollections().toArray();
+    collections = collections.map((collection) => collection.name);
+
+    // For each collection get all their data and add to dump container
+    for (const collectionName of collections) {
+        let collectionData = await mongoose.connection.db.collection(collectionName).find({}).toArray();
+        dumpContainer[collectionName] = collectionData;
+    }
+
+    // Confirm in terminal that server is returning correct data
+    console.log("Dumping all of db data to the client: \n" + JSON.stringify(dumpContainer, null, 4));
+
+    response.json({
+        data: dumpContainer
+    })
 });
 
 // 404 message route
