@@ -56,6 +56,9 @@ databaseConnector(databaseURL).then(() => {
 });
 
 
+// Configured Routes from controllers
+const rolesController = require("./controllers/RoleRoutes");
+app.use("/roles", rolesController);
 
 
 // ROUTES
