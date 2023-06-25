@@ -60,6 +60,9 @@ databaseConnector(databaseURL).then(() => {
 const rolesController = require("./controllers/RoleRoutes");
 app.use("/roles", rolesController);
 
+const usersController = require("./controllers/UserRoutes");
+app.use("/users", usersController);
+
 
 // ROUTES
 // Route to receive information about the database connection
