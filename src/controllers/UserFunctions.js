@@ -4,9 +4,10 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 // Encryption and decryption functionality
-let encAlgorithm = require("crypto");
-let encPrivateKey = "aes-256-cbc";
-let encIV = crypto.scryptSync(process.env.ENC_KEY, "SpecialSalt", 32);
+const crypto = require('crypto');
+let encAlgorithm = 'aes-256-cbc';
+let encPrivateKey = crypto.scryptSync(process.env.ENC_KEY, 'SpecialSalt', 32);
+let encIV = crypto.scryptSync(process.env.ENC_IV, 'SpecialSalt', 16);
 let cipher = crypto.createCipheriv(encAlgorithm, encPrivateKey, encIV);
 let decipher = crypto.createDecipheriv(encAlgorithm, encPrivateKey, encIV);
 

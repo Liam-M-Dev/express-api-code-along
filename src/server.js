@@ -63,6 +63,8 @@ app.use("/roles", rolesController);
 const usersController = require("./controllers/UserRoutes");
 app.use("/users", usersController);
 
+const postsController = require("./controllers/PostRoutes");
+app.use("/posts", postsController)
 
 // ROUTES
 // Route to receive information about the database connection
