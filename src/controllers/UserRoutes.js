@@ -11,8 +11,30 @@ const {
 const e = require("express");
 const { all } = require("./RoleRoutes");
 
+// Middleware
+const uniqueEmailCheck = async (request, response, next) => {
+    let isEmailInUse = await User.exists({email: request.body.email}).exec();
+    if (isEmailInUse) {
+        next(new Error("An account with this email address already exists."));
+    } else {
+        next();
+    }
+}
+
+// If any errors detected, end route early and respond with error message
+const handleErrors = async (error, request, response, next) => {
+    if (error) {
+        response.status(500).json({
+            error: error.message
+        });
+    } else {
+        next();
+    }
+}
+
+
 // Sign up a new user
-router.post("/sign-up", async (request,response) => {
+router.post("/sign-up", uniqueEmailCheck, handleErrors, async (request,response) => {
     let userDetails = {
         email: request.body.email,
         password: request.body.password,
